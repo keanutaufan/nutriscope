@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nutriscope/screens/app/ingredients_screen.dart';
 import 'package:nutriscope/screens/app/scanner_screen.dart';
 
 class AppScreen extends StatefulWidget {
@@ -12,7 +13,7 @@ class _AppScreenState extends State<AppScreen> {
   int _selectedIndex = 1;
 
   static const List<Widget> _pages = [
-    Text("This would be the ingredients screen"),
+    IngredientsScreen(),
     ScannerScreen(),
     Text("This would be the account profile screen"),
   ];
