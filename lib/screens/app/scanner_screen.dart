@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:nutriscope/screens/app/product_screen.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 class ScannerScreen extends StatefulWidget {
@@ -30,10 +31,35 @@ class _ScannerScreenState extends State<ScannerScreen> {
     this.controller = controller;
 
     controller.scannedDataStream.listen((scanData) {
+      controller.pauseCamera();
       setState(() {
         result = scanData;
       });
+      _onQRScanned().then((value) => controller.resumeCamera());
     });
+  }
+
+  Future<dynamic> _onQRScanned() {
+    return Navigator.push(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            ProductScreen(qrPayload: result!.code),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          const begin = Offset(0.0, 1.0);
+          const end = Offset.zero;
+          const curve = Curves.ease;
+
+          var tween =
+              Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+          return SlideTransition(
+            position: animation.drive(tween),
+            child: child,
+          );
+        },
+      ),
+    );
   }
 
   @override
@@ -49,7 +75,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
         color: Theme.of(context).primaryColor,
         child: Column(
           children: [
-            Container(
+            SizedBox(
               height: 72,
               child: Center(
                 child: Padding(
@@ -94,13 +120,13 @@ class _ScannerScreenState extends State<ScannerScreen> {
                 )),
 
             // QR Result
-            Expanded(
-              child: Center(
-                child: (result != null)
-                    ? Text("Data: ${result!.code}")
-                    : const Text("Scan code"),
-              ),
-            ),
+            // Expanded(
+            //   child: Center(
+            //     child: (result != null)
+            //         ? Text("Data: ${result!.code}")
+            //         : const Text("Scan code"),
+            //   ),
+            // ),
           ],
         ),
       ),
