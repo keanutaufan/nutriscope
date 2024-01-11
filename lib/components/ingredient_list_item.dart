@@ -56,7 +56,7 @@ class IngredientListItem extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(width: 8),
+              const SizedBox(width: 10),
 
               // Warn
               GestureDetector(
@@ -69,7 +69,7 @@ class IngredientListItem extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(width: 8),
+              const SizedBox(width: 10),
 
               // Info
               GestureDetector(
