@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nutriscope/components/account_card.dart';
 
 class AccountScreen extends StatelessWidget {
   const AccountScreen({super.key});
@@ -20,6 +21,16 @@ class AccountScreen extends StatelessWidget {
               ),
             ),
           ),
+
+          // Card
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: AccountCard(
+              name: "John Smith",
+              email: "johnsmith@nutriscope.com",
+              createdAt: DateTime.parse("2024-01-11 00:00:07Z"),
+            ),
+          )
         ],
       ),
     );
