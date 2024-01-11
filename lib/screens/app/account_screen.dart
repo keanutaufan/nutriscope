@@ -6,6 +6,11 @@ import 'package:nutriscope/components/ns_fill_button.dart';
 class AccountScreen extends StatelessWidget {
   const AccountScreen({super.key});
 
+  static final currentUser = FirebaseAuth.instance.currentUser;
+  static final name = currentUser?.displayName ?? "Guest";
+  static final email = currentUser?.email ?? "Unregistered User";
+  static final createdAt = currentUser?.metadata.creationTime;
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -28,9 +33,9 @@ class AccountScreen extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: AccountCard(
-              name: "John Smith",
-              email: "johnsmith@nutriscope.com",
-              createdAt: DateTime.parse("2024-01-11 00:00:07Z"),
+              name: name == "" ? "NutriScope User" : name,
+              email: email,
+              createdAt: createdAt ?? DateTime.now(),
             ),
           ),
 
