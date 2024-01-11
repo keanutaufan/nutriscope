@@ -58,6 +58,7 @@ class _IngredientsScreenState extends State<IngredientsScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Heading
           const Padding(
