@@ -64,7 +64,7 @@ class IngredientListItem extends StatelessWidget {
                 child: Icon(
                   Icons.warning,
                   color: (status == 1)
-                      ? const Color.fromRGBO(27, 68, 49, 1)
+                      ? const Color.fromRGBO(255, 215, 0, 1)
                       : const Color.fromRGBO(194, 194, 194, 1),
                 ),
               ),
