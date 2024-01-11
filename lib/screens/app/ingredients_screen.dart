@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nutriscope/components/ingredient_list_item.dart';
 
 class IngredientsScreen extends StatelessWidget {
   const IngredientsScreen({super.key});
@@ -8,6 +9,14 @@ class IngredientsScreen extends StatelessWidget {
     "Tepung Jagung",
     "Tepung Ketan",
     "Tepung Beras",
+    "Daging Ikan",
+    "Daging Ayam",
+    "Daging Sapi",
+    "Daging Babi",
+    "Daging Domba",
+    "Daging Kambing",
+    "Daging Kerbau",
+    "Minyak Nabati",
   ];
 
   @override
@@ -34,7 +43,10 @@ class IngredientsScreen extends StatelessWidget {
               padding: const EdgeInsets.all(8),
               itemCount: placeholder.length,
               itemBuilder: (context, index) {
-                return Text(placeholder.elementAt(index));
+                return IngredientListItem(
+                  label: placeholder.elementAt(index),
+                  status: 0,
+                );
               },
             ),
           ),
