@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class IngredientListItem extends StatelessWidget {
   final String label;
+  final String id;
   final int status;
 
   final VoidCallback? onTapAllow;
@@ -10,6 +11,7 @@ class IngredientListItem extends StatelessWidget {
 
   const IngredientListItem({
     super.key,
+    required this.id,
     required this.label,
     required this.status,
     this.onTapAllow,

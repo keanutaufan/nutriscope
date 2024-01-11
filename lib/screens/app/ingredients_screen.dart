@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:nutriscope/components/ingredient_list_item.dart';
 import 'package:nutriscope/screens/app/ingredient_detail_screen.dart';
@@ -10,24 +11,33 @@ class IngredientsScreen extends StatefulWidget {
 }
 
 class _IngredientsScreenState extends State<IngredientsScreen> {
-  final List _placeholder = [
-    ["Tepung Terigu", 0],
-    ["Tepung Jagung", 0],
-    ["Tepung Ketan", 0],
-    ["Tepung Beras", 1],
-    ["Daging Ikan", 1],
-    ["Daging Ayam", 0],
-    ["Daging Sapi", 0],
-    ["Daging Babi", 0],
-    ["Daging Domba", 0],
-    ["Daging Kambing", 0],
-    ["Daging Kerbau", 0],
-    ["Minyak Nabati", 0],
-  ];
+  static final db = FirebaseFirestore.instance;
+
+  final List labels = [];
+
+  @override
+  void initState() {
+    super.initState();
+    db.collection("productsLabel").get().then((querySnapshot) {
+      for (var docSnapshot in querySnapshot.docs) {
+        labels.add([
+          {
+            "id": docSnapshot.id,
+            "name": docSnapshot.data()["name"],
+          },
+          0
+        ]);
+      }
+
+      // Force trigger re-render
+      // Try to find a way to do caching and lazy loading lmao
+      setState(() {});
+    });
+  }
 
   void _setStatus(int index, int status) {
     setState(() {
-      _placeholder[index][1] = status;
+      labels[index][1] = status;
     });
   }
 
@@ -77,13 +87,13 @@ class _IngredientsScreenState extends State<IngredientsScreen> {
           Expanded(
             child: ListView.builder(
               padding: const EdgeInsets.all(8),
-              itemCount: _placeholder.length,
+              itemCount: labels.length,
               itemBuilder: (context, index) {
                 return IngredientListItem(
-                  label: _placeholder.elementAt(index)[0],
-                  status: _placeholder.elementAt(index)[1],
-                  onTapInfo: () =>
-                      _onRequestInfo(_placeholder.elementAt(index)[0]),
+                  label: labels[index][0]["name"],
+                  id: labels[index][0]["id"],
+                  status: labels[index][1],
+                  onTapInfo: () => _onRequestInfo(labels[index][0]["name"]),
                   onTapAllow: () => _setStatus(index, 0),
                   onTapWarn: () => _setStatus(index, 1),
                 );
