@@ -3,20 +3,23 @@ import 'package:flutter/material.dart';
 class InputField extends StatelessWidget {
   final String placeholder;
   final IconData icon;
-  final bool obscureText;
+  final bool? obscureText;
+  final TextEditingController? controller;
 
   const InputField({
     super.key,
     required this.placeholder,
     required this.icon,
-    required this.obscureText,
+    this.obscureText,
+    this.controller,
   });
 
   @override
   Widget build(BuildContext context) {
     return TextField(
       maxLines: 1,
-      obscureText: obscureText,
+      controller: controller,
+      obscureText: obscureText ?? false,
       decoration: InputDecoration(
         hintText: placeholder,
         border: OutlineInputBorder(

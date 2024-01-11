@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:nutriscope/components/account_card.dart';
+import 'package:nutriscope/components/ns_fill_button.dart';
 
 class AccountScreen extends StatelessWidget {
   const AccountScreen({super.key});
@@ -30,7 +32,16 @@ class AccountScreen extends StatelessWidget {
               email: "johnsmith@nutriscope.com",
               createdAt: DateTime.parse("2024-01-11 00:00:07Z"),
             ),
-          )
+          ),
+
+          NSFillButton(
+            text: "Logout",
+            onPressed: () {
+              FirebaseAuth.instance.signOut();
+            },
+            backgroundColor: Colors.red,
+            foregroundColor: Colors.white,
+          ),
         ],
       ),
     );
