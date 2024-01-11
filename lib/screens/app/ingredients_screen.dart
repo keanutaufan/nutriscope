@@ -41,12 +41,12 @@ class _IngredientsScreenState extends State<IngredientsScreen> {
     });
   }
 
-  void _onRequestInfo(String text) {
+  void _onRequestInfo(String text, String id) {
     Navigator.push(
       context,
       PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) =>
-            IngredientDetailScreen(name: text),
+            IngredientDetailScreen(name: text, id: id),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           const begin = Offset(0.0, 1.0);
           const end = Offset.zero;
@@ -93,7 +93,10 @@ class _IngredientsScreenState extends State<IngredientsScreen> {
                   label: labels[index][0]["name"],
                   id: labels[index][0]["id"],
                   status: labels[index][1],
-                  onTapInfo: () => _onRequestInfo(labels[index][0]["name"]),
+                  onTapInfo: () => _onRequestInfo(
+                    labels[index][0]["name"],
+                    labels[index][0]["id"],
+                  ),
                   onTapAllow: () => _setStatus(index, 0),
                   onTapWarn: () => _setStatus(index, 1),
                 );
