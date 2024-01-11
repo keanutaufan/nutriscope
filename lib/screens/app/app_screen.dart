@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nutriscope/screens/app/account_screen.dart';
 import 'package:nutriscope/screens/app/ingredients_screen.dart';
 import 'package:nutriscope/screens/app/scanner_screen.dart';
 
@@ -15,7 +16,7 @@ class _AppScreenState extends State<AppScreen> {
   static const List<Widget> _pages = [
     IngredientsScreen(),
     ScannerScreen(),
-    Text("This would be the account profile screen"),
+    AccountScreen(),
   ];
 
   void _onItemTapped(int index) {
