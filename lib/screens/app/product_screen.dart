@@ -63,7 +63,69 @@ class _ProductScreenState extends State<ProductScreen> {
                     ? const Center(
                         child: Text("Barang Tidak Ditemukan!"),
                       )
-                    : Text(name),
+                    : Expanded(
+                        child: ListView(
+                          padding: const EdgeInsets.all(16),
+                          children: [
+                            // Heading
+                            const Text(
+                              "Produk Terpindai!",
+                              style: TextStyle(
+                                fontFamily: "Montserrat",
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+
+                            // Image
+                            SizedBox(
+                              width: 150,
+                              height: 150,
+                              child: Image.network(
+                                "https://placehold.co/120x100/png",
+                                // width: 120,
+                                // height: 100,
+                              ),
+                            ),
+
+                            // Product Name
+                            Text(
+                              name,
+                              style: const TextStyle(
+                                fontFamily: "Montserrat",
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+
+                            const SizedBox(height: 32),
+
+                            const Text(
+                              "Tentang Produk Ini:",
+                              style: TextStyle(
+                                fontFamily: "Montserrat",
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+
+                            const SizedBox(height: 8),
+
+                            // Description
+                            Text(
+                              description,
+                              style: const TextStyle(
+                                fontFamily: "Montserrat",
+                                fontSize: 14,
+                              ),
+                              textAlign: TextAlign.justify,
+                            )
+                          ],
+                        ),
+                      ),
           ],
         ),
       ),
