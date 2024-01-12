@@ -20,7 +20,7 @@ class _IngredientDetailScreenState extends State<IngredientDetailScreen> {
 
   String description = "Loading...";
   String category = "Loading...";
-  // List<String> labels = [];
+  List<dynamic> labels = [];
 
   @override
   void initState() {
@@ -33,7 +33,7 @@ class _IngredientDetailScreenState extends State<IngredientDetailScreen> {
       final data = doc.data() as Map<String, dynamic>;
       description = data["description"];
       category = data["category"];
-      // labels = data["tags"];
+      labels = List.from(data["tags"]);
       setState(() {});
     });
   }
@@ -42,28 +42,34 @@ class _IngredientDetailScreenState extends State<IngredientDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.only(top: 38.0, right: 15.0, left: 15.0),
+        padding: const EdgeInsets.only(top: 38, left: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Header
-            const Center(
-              child: Text(
-                "Informasi Bahan Makanan",
-                style: TextStyle(
-                  fontFamily: "Montserrat",
-                  fontSize: 16,
+            const Padding(
+              padding: EdgeInsets.only(right: 16),
+              child: Center(
+                child: Text(
+                  "Informasi Bahan Makanan",
+                  style: TextStyle(
+                    fontFamily: "Montserrat",
+                    fontSize: 16,
+                  ),
                 ),
               ),
             ),
 
-            Center(
-              child: Text(
-                widget.name,
-                style: const TextStyle(
-                  fontFamily: "Montserrat",
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
+            Padding(
+              padding: const EdgeInsets.only(right: 16),
+              child: Center(
+                child: Text(
+                  widget.name,
+                  style: const TextStyle(
+                    fontFamily: "Montserrat",
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
@@ -84,63 +90,40 @@ class _IngredientDetailScreenState extends State<IngredientDetailScreen> {
             const SizedBox(height: 8.0),
 
             // Horizontal ListView
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 5.0, horizontal: 10.0),
-                    margin: const EdgeInsets.only(right: 9.0),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10.0),
-                      color: const Color(0xFF1B4431),
-                    ),
-                    child: const Text(
-                      "label 1",
+            SizedBox(
+              height: 28,
+              // scrollDirection: Axis.horizontal,
+              child: labels.isEmpty
+                  ? const Text(
+                      "No Label",
                       style: TextStyle(
                         fontFamily: "Montserrat",
-                        fontSize: 12,
-                        color: Colors.white,
+                        fontSize: 14,
                       ),
+                    )
+                  : ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: labels.length,
+                      itemBuilder: (context, index) {
+                        return Container(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 4, horizontal: 12),
+                          margin: const EdgeInsets.only(right: 12),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: Theme.of(context).primaryColor,
+                          ),
+                          child: Text(
+                            labels[index],
+                            style: const TextStyle(
+                              fontFamily: "Montserrat",
+                              fontSize: 12,
+                              color: Colors.white,
+                            ),
+                          ),
+                        );
+                      },
                     ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 5.0, horizontal: 10.0),
-                    margin: const EdgeInsets.only(right: 9.0),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10.0),
-                      color: const Color(0xFF1B4431),
-                    ),
-                    child: const Text(
-                      "label 2",
-                      style: TextStyle(
-                        fontFamily: "Montserrat",
-                        fontSize: 12,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 5.0, horizontal: 10.0),
-                    margin: const EdgeInsets.only(right: 9.0),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10.0),
-                      color: const Color(0xFF1B4431),
-                    ),
-                    child: const Text(
-                      "label 3",
-                      style: TextStyle(
-                        fontFamily: "Montserrat",
-                        fontSize: 12,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
             ),
 
             // Padding
@@ -175,11 +158,14 @@ class _IngredientDetailScreenState extends State<IngredientDetailScreen> {
               ),
             ),
 
-            Text(
-              description,
-              style: const TextStyle(
-                fontFamily: "Montserrat",
-                fontSize: 14,
+            Padding(
+              padding: const EdgeInsets.only(right: 16),
+              child: Text(
+                description,
+                style: const TextStyle(
+                  fontFamily: "Montserrat",
+                  fontSize: 14,
+                ),
               ),
             ),
           ],
