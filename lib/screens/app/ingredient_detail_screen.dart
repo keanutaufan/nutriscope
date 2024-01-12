@@ -25,7 +25,11 @@ class _IngredientDetailScreenState extends State<IngredientDetailScreen> {
   @override
   void initState() {
     super.initState();
-    db.collection("products").doc(widget.id).get().then((DocumentSnapshot doc) {
+    db
+        .collection("ingredients")
+        .doc(widget.id)
+        .get()
+        .then((DocumentSnapshot doc) {
       final data = doc.data() as Map<String, dynamic>;
       description = data["description"];
       category = data["category"];

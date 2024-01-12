@@ -18,7 +18,7 @@ class _IngredientsScreenState extends State<IngredientsScreen> {
   @override
   void initState() {
     super.initState();
-    db.collection("productsLabel").get().then((querySnapshot) {
+    db.collection("ingredientLabels").get().then((querySnapshot) {
       for (var docSnapshot in querySnapshot.docs) {
         labels.add([
           {
