@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:nutriscope/components/ingredient_list_item.dart';
 import 'package:nutriscope/components/ns_ghost_button.dart';
@@ -14,12 +15,14 @@ class ProductScreen extends StatefulWidget {
 
 class _ProductScreenState extends State<ProductScreen> {
   static final db = FirebaseFirestore.instance;
+  static final storage = FirebaseStorage.instance;
 
   bool exist = true;
   bool loading = true;
   String name = "";
   String description = "";
   List<dynamic> ingredients = [];
+  String imageUrl = "";
 
   @override
   void initState() {
@@ -28,12 +31,14 @@ class _ProductScreenState extends State<ProductScreen> {
         .collection("products")
         .doc(widget.qrPayload)
         .get()
-        .then((DocumentSnapshot doc) {
+        .then((DocumentSnapshot doc) async {
       if (doc.exists) {
         final data = doc.data() as Map<String, dynamic>;
         name = data["name"];
         description = data["description"];
         ingredients = List.from(data["ingredients"]);
+        imageUrl = await storage.ref().child("${data["image"]}").getDownloadURL();
+
         print(data);
       } else {
         exist = false;
@@ -90,7 +95,7 @@ class _ProductScreenState extends State<ProductScreen> {
                                   width: 150,
                                   height: 150,
                                   child: Image.network(
-                                    "https://placehold.co/120x100/png",
+                                    imageUrl,
                                   ),
                                 ),
 
