@@ -203,6 +203,21 @@ class _ProductScreenState extends State<ProductScreen> {
 
                                 const SizedBox(height: 16),
 
+                                Text(
+                                  safe
+                                      ? "Anda dapat mengonsumsi produk ini"
+                                      : "Anda mungkin tidak dapat mengonsumsi produk ini",
+                                  style: TextStyle(
+                                    fontFamily: "Montserrat",
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: safe ? Colors.green : Colors.red,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+
+                                const SizedBox(height: 18),
+
                                 // Ingredients
                                 ListView.builder(
                                   shrinkWrap: true,
