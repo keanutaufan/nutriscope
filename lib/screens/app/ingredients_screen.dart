@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:nutriscope/components/ingredient_list_item.dart';
 import 'package:nutriscope/screens/app/ingredient_detail_screen.dart';
@@ -14,10 +15,23 @@ class _IngredientsScreenState extends State<IngredientsScreen> {
   static final db = FirebaseFirestore.instance;
 
   final List labels = [];
+  List markedIngredients = [];
 
   @override
   void initState() {
     super.initState();
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser != null) {
+      db
+          .collection("userPreferences")
+          .doc(currentUser.uid)
+          .get()
+          .then((DocumentSnapshot doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        markedIngredients = List.from(data["markedIngredients"]);
+      });
+    }
+
     db.collection("ingredientLabels").get().then((querySnapshot) {
       for (var docSnapshot in querySnapshot.docs) {
         labels.add([
@@ -25,14 +39,13 @@ class _IngredientsScreenState extends State<IngredientsScreen> {
             "id": docSnapshot.id,
             "name": docSnapshot.data()["name"],
           },
-          0
+          markedIngredients.contains(docSnapshot.id) ? 0 : 1,
         ]);
       }
-
-      // Force trigger re-render
-      // Try to find a way to do caching and lazy loading lmao
-      setState(() {});
     });
+    // Force trigger re-render
+    // Try to find a way to do caching and lazy loading lmao
+    setState(() {});
   }
 
   void _setStatus(int index, int status) {
