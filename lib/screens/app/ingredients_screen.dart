@@ -51,8 +51,6 @@ class _IngredientsScreenState extends State<IngredientsScreen> {
       return;
     }
 
-    labels[index][1] = status;
-
     final currentUser = FirebaseAuth.instance.currentUser;
 
     if (currentUser != null) {
@@ -70,6 +68,8 @@ class _IngredientsScreenState extends State<IngredientsScreen> {
         });
       }
     }
+
+    labels[index][1] = status;
 
     setState(() {});
   }
