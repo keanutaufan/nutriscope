@@ -4,6 +4,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:nutriscope/components/static_ingredient_list_item.dart';
 import 'package:nutriscope/components/ns_ghost_button.dart';
+import 'package:nutriscope/screens/app/ingredient_detail_screen.dart';
 
 class ProductScreen extends StatefulWidget {
   final String? qrPayload;
@@ -77,6 +78,29 @@ class _ProductScreenState extends State<ProductScreen> {
     if (mounted) {
       _asyncInitState().whenComplete(() => setState(() {}));
     }
+  }
+
+  void _onRequestInfo(String text, String id) {
+    Navigator.push(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            IngredientDetailScreen(name: text, id: id),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          const begin = Offset(0.0, 1.0);
+          const end = Offset.zero;
+          const curve = Curves.ease;
+
+          var tween =
+              Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+          return SlideTransition(
+            position: animation.drive(tween),
+            child: child,
+          );
+        },
+      ),
+    );
   }
 
   @override
@@ -189,7 +213,10 @@ class _ProductScreenState extends State<ProductScreen> {
                                       id: ingredients[index]["id"],
                                       label: ingredients[index]["name"],
                                       status: ingredients[index]["status"],
-                                      onTapInfo: null,
+                                      onTapInfo: () => _onRequestInfo(
+                                        ingredients[index]["name"],
+                                        ingredients[index]["id"],
+                                      ),
                                     );
                                   },
                                 ),
