@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:nutriscope/components/ingredient_list_item.dart';
+import 'package:nutriscope/components/static_ingredient_list_item.dart';
 import 'package:nutriscope/components/ns_ghost_button.dart';
 
 class ProductScreen extends StatefulWidget {
@@ -16,15 +17,27 @@ class ProductScreen extends StatefulWidget {
 class _ProductScreenState extends State<ProductScreen> {
   static final db = FirebaseFirestore.instance;
   static final storage = FirebaseStorage.instance;
+  static final auth = FirebaseAuth.instance;
 
   bool exist = true;
   bool loading = true;
+  bool safe = true;
+
   String name = "";
   String description = "";
   List<dynamic> ingredients = [];
   String imageUrl = "";
+  List markedIngredients = [];
 
   Future<void> _asyncInitState() async {
+    final currentUser = auth.currentUser;
+    if (currentUser != null) {
+      final doc =
+          await db.collection("userPreferences").doc(currentUser.uid).get();
+      final data = doc.data() as Map<String, dynamic>;
+      markedIngredients = List.from(data["markedIngredients"]);
+    }
+
     final doc = await db.collection("products").doc(widget.qrPayload).get();
     if (doc.exists) {
       final data = doc.data() as Map<String, dynamic>;
@@ -37,7 +50,17 @@ class _ProductScreenState extends State<ProductScreen> {
       final ingredientDocs = await Future.wait(ingredientFutures);
 
       ingredients = ingredientDocs.map((ingredientDoc) {
-        return {"id": ingredientDoc.id, "name": ingredientDoc.data()!["name"]};
+        final status = markedIngredients.contains(ingredientDoc.id) ? 1 : 0;
+
+        if (status == 1) {
+          safe = false;
+        }
+
+        return {
+          "id": ingredientDoc.id,
+          "name": ingredientDoc.data()!["name"],
+          "status": status,
+        };
       }).toList();
 
       imageUrl = await storage.ref().child(data["image"]).getDownloadURL();
@@ -162,10 +185,10 @@ class _ProductScreenState extends State<ProductScreen> {
                                   physics: const NeverScrollableScrollPhysics(),
                                   itemCount: ingredients.length,
                                   itemBuilder: (context, index) {
-                                    return IngredientListItem(
+                                    return StaticIngredientListItem(
                                       id: ingredients[index]["id"],
                                       label: ingredients[index]["name"],
-                                      status: 0,
+                                      status: ingredients[index]["status"],
                                       onTapInfo: null,
                                     );
                                   },
