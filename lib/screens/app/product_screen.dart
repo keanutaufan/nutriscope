@@ -24,28 +24,38 @@ class _ProductScreenState extends State<ProductScreen> {
   List<dynamic> ingredients = [];
   String imageUrl = "";
 
+  Future<void> _asyncInitState() async {
+    final doc = await db.collection("products").doc(widget.qrPayload).get();
+    if (doc.exists) {
+      final data = doc.data() as Map<String, dynamic>;
+      name = data["name"];
+      description = data["description"];
+
+      final ingredientIDs = List<String>.from(data["ingredients"]);
+      final ingredientFutures = ingredientIDs
+          .map((id) => db.collection("ingredientLabels").doc(id).get());
+      final ingredientDocs = await Future.wait(ingredientFutures);
+
+      ingredients = ingredientDocs.map((ingredientDoc) {
+        return {"id": ingredientDoc.id, "name": ingredientDoc.data()!["name"]};
+      }).toList();
+
+      imageUrl = await storage.ref().child(data["image"]).getDownloadURL();
+    } else {
+      exist = false;
+    }
+
+    print(ingredients);
+
+    loading = false;
+  }
+
   @override
   void initState() {
     super.initState();
-    db
-        .collection("products")
-        .doc(widget.qrPayload)
-        .get()
-        .then((DocumentSnapshot doc) async {
-      if (doc.exists) {
-        final data = doc.data() as Map<String, dynamic>;
-        name = data["name"];
-        description = data["description"];
-        ingredients = List.from(data["ingredients"]);
-        imageUrl = await storage.ref().child("${data["image"]}").getDownloadURL();
-
-        print(data);
-      } else {
-        exist = false;
-      }
-      loading = false;
-      setState(() {});
-    });
+    if (mounted) {
+      _asyncInitState().whenComplete(() => setState(() {}));
+    }
   }
 
   @override
@@ -155,8 +165,8 @@ class _ProductScreenState extends State<ProductScreen> {
                                   itemCount: ingredients.length,
                                   itemBuilder: (context, index) {
                                     return IngredientListItem(
-                                      id: ingredients[index],
-                                      label: ingredients[index],
+                                      id: ingredients[index]["id"],
+                                      label: ingredients[index]["name"],
                                       status: 0,
                                       onTapInfo: null,
                                     );
