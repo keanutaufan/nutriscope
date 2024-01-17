@@ -45,8 +45,6 @@ class _ProductScreenState extends State<ProductScreen> {
       exist = false;
     }
 
-    print(ingredients);
-
     loading = false;
   }
 

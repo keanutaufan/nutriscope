@@ -17,41 +17,61 @@ class _IngredientsScreenState extends State<IngredientsScreen> {
   final List labels = [];
   List markedIngredients = [];
 
+  Future<void> _initState() async {
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser != null) {
+      final doc =
+          await db.collection("userPreferences").doc(currentUser.uid).get();
+      final data = doc.data() as Map<String, dynamic>;
+      markedIngredients = List.from(data["markedIngredients"]);
+    }
+
+    final doc = await db.collection("ingredientLabels").get();
+    for (var docSnapshot in doc.docs) {
+      labels.add([
+        {
+          "id": docSnapshot.id,
+          "name": docSnapshot.data()["name"],
+        },
+        markedIngredients.contains(docSnapshot.id) ? 1 : 0,
+      ]);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
-    final currentUser = FirebaseAuth.instance.currentUser;
-    if (currentUser != null) {
-      db
-          .collection("userPreferences")
-          .doc(currentUser.uid)
-          .get()
-          .then((DocumentSnapshot doc) {
-        final data = doc.data() as Map<String, dynamic>;
-        markedIngredients = List.from(data["markedIngredients"]);
-      });
+    if (mounted) {
+      _initState().whenComplete(() => setState(() {}));
     }
-
-    db.collection("ingredientLabels").get().then((querySnapshot) {
-      for (var docSnapshot in querySnapshot.docs) {
-        labels.add([
-          {
-            "id": docSnapshot.id,
-            "name": docSnapshot.data()["name"],
-          },
-          markedIngredients.contains(docSnapshot.id) ? 0 : 1,
-        ]);
-      }
-    });
-    // Force trigger re-render
-    // Try to find a way to do caching and lazy loading lmao
-    setState(() {});
   }
 
-  void _setStatus(int index, int status) {
-    setState(() {
-      labels[index][1] = status;
-    });
+  void _setStatus(int index, int status) async {
+    if (labels[index][1] == status) {
+      return;
+    }
+
+    labels[index][1] = status;
+
+    final currentUser = FirebaseAuth.instance.currentUser;
+
+    if (currentUser != null) {
+      // Restrict -> OK
+      if (status == 0) {
+        await db.collection("userPreferences").doc(currentUser.uid).update({
+          "markedIngredients": FieldValue.arrayRemove([labels[index][0]["id"]])
+        });
+      }
+
+      // OK -> Restrict
+      else if (status == 1) {
+        await db.collection("userPreferences").doc(currentUser.uid).update({
+          "markedIngredients": FieldValue.arrayUnion([labels[index][0]["id"]])
+        });
+      }
+    }
+
+    setState(() {});
   }
 
   void _onRequestInfo(String text, String id) {
