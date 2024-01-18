@@ -1,7 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:nutriscope/components/ingredient_list_item.dart';
+import 'package:nutriscope/components/static_ingredient_list_item.dart';
 import 'package:nutriscope/components/ns_ghost_button.dart';
+import 'package:nutriscope/screens/app/ingredient_detail_screen.dart';
 
 class ProductScreen extends StatefulWidget {
   final String? qrPayload;
@@ -14,33 +17,90 @@ class ProductScreen extends StatefulWidget {
 
 class _ProductScreenState extends State<ProductScreen> {
   static final db = FirebaseFirestore.instance;
+  static final storage = FirebaseStorage.instance;
+  static final auth = FirebaseAuth.instance;
 
   bool exist = true;
   bool loading = true;
+  bool safe = true;
+
   String name = "";
   String description = "";
   List<dynamic> ingredients = [];
+  String imageUrl = "";
+  List markedIngredients = [];
+
+  Future<void> _asyncInitState() async {
+    final currentUser = auth.currentUser;
+    if (currentUser != null) {
+      final doc =
+          await db.collection("userPreferences").doc(currentUser.uid).get();
+      final data = doc.data() as Map<String, dynamic>;
+      markedIngredients = List.from(data["markedIngredients"]);
+    }
+
+    final doc = await db.collection("products").doc(widget.qrPayload).get();
+    if (doc.exists) {
+      final data = doc.data() as Map<String, dynamic>;
+      name = data["name"];
+      description = data["description"];
+
+      final ingredientIDs = List<String>.from(data["ingredients"]);
+      final ingredientFutures = ingredientIDs
+          .map((id) => db.collection("ingredientLabels").doc(id).get());
+      final ingredientDocs = await Future.wait(ingredientFutures);
+
+      ingredients = ingredientDocs.map((ingredientDoc) {
+        final status = markedIngredients.contains(ingredientDoc.id) ? 1 : 0;
+
+        if (status == 1) {
+          safe = false;
+        }
+
+        return {
+          "id": ingredientDoc.id,
+          "name": ingredientDoc.data()!["name"],
+          "status": status,
+        };
+      }).toList();
+
+      imageUrl = await storage.ref().child(data["image"]).getDownloadURL();
+    } else {
+      exist = false;
+    }
+
+    loading = false;
+  }
 
   @override
   void initState() {
     super.initState();
-    db
-        .collection("products")
-        .doc(widget.qrPayload)
-        .get()
-        .then((DocumentSnapshot doc) {
-      if (doc.exists) {
-        final data = doc.data() as Map<String, dynamic>;
-        name = data["name"];
-        description = data["description"];
-        ingredients = List.from(data["ingredients"]);
-        print(data);
-      } else {
-        exist = false;
-      }
-      loading = false;
-      setState(() {});
-    });
+    if (mounted) {
+      _asyncInitState().whenComplete(() => setState(() {}));
+    }
+  }
+
+  void _onRequestInfo(String text, String id) {
+    Navigator.push(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            IngredientDetailScreen(name: text, id: id),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          const begin = Offset(0.0, 1.0);
+          const end = Offset.zero;
+          const curve = Curves.ease;
+
+          var tween =
+              Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+          return SlideTransition(
+            position: animation.drive(tween),
+            child: child,
+          );
+        },
+      ),
+    );
   }
 
   @override
@@ -90,7 +150,7 @@ class _ProductScreenState extends State<ProductScreen> {
                                   width: 150,
                                   height: 150,
                                   child: Image.network(
-                                    "https://placehold.co/120x100/png",
+                                    imageUrl,
                                   ),
                                 ),
 
@@ -143,17 +203,35 @@ class _ProductScreenState extends State<ProductScreen> {
 
                                 const SizedBox(height: 16),
 
+                                Text(
+                                  safe
+                                      ? "Anda dapat mengonsumsi produk ini"
+                                      : "Anda mungkin tidak dapat mengonsumsi produk ini",
+                                  style: TextStyle(
+                                    fontFamily: "Montserrat",
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: safe ? Colors.green : Colors.red,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+
+                                const SizedBox(height: 18),
+
                                 // Ingredients
                                 ListView.builder(
                                   shrinkWrap: true,
                                   physics: const NeverScrollableScrollPhysics(),
                                   itemCount: ingredients.length,
                                   itemBuilder: (context, index) {
-                                    return IngredientListItem(
-                                      id: ingredients[index],
-                                      label: ingredients[index],
-                                      status: 0,
-                                      onTapInfo: null,
+                                    return StaticIngredientListItem(
+                                      id: ingredients[index]["id"],
+                                      label: ingredients[index]["name"],
+                                      status: ingredients[index]["status"],
+                                      onTapInfo: () => _onRequestInfo(
+                                        ingredients[index]["name"],
+                                        ingredients[index]["id"],
+                                      ),
                                     );
                                   },
                                 ),

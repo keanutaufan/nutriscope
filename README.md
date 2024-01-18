@@ -70,20 +70,18 @@ use the following QR code:
 
 NutriScope will return details of the product, including image, brief
 description, and list of its ingredients. NutriScope will also highlight
-certain ingredients that the user has marked to avoid, but this feature
-is scheduled to be available on the next release. Please look forward to it!
+certain ingredients that the user has marked to avoid.
 
-![Product Details Screen](images/product-details-screen.jpg)
+![Product Details Screen](images/product-details-screen.png)
 
-The user can also see lists of ingredients that we indexed. The user can also
-mark any ingredients to avoid by clicking the warning icon and unmark it by
+The user can see lists of ingredients that we indexed and mark any 
+ingredients to avoid by clicking the warning icon and unmark it by
 clicking the checkmark button. 
 
 ![Ingredient List Screen](images/ingredient-list-screen.jpg)
 
-This feature, too, is scheduled for the next release. What's available for now,
-though, is ingredient details information. Just click at the rightmost icon
-of the list item, and a new dialog will appear:
+User can see brief explanation and dietary information of each ingredients  
+Just click at the rightmost icon of the list item, and a new dialog will appear:
 
 ![Ingredient Details Screen](images/ingredient-details-screen.jpg)
 
@@ -98,14 +96,13 @@ more on the next release!
 ## What's next?
 
 We're planning on implementing these features somewhere down the line:
-- Mark/unmark ingredient to avoid
-- Show whether a certain product contains any ingredient that user has 
-  specifically marked to avoid
+- Caching
+- More proper state management strategy
 - Better UI overall
 - More auth providers
-- Ingredient fuzzy search (Elastic-Firebase integration on free tier when???)
-- Firebase storage integration for product images
-- Caching
+- Onboarding screen and quick tutorial for new user
+- Ingredients and products fuzzy search (Elastic-Firebase integration on 
+  free tier when???)
 - More things idk
 
 BPOM please notice us ;)

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nutriscope/components/input_field.dart';
 import 'package:nutriscope/components/ns_fill_button.dart';
-import 'package:nutriscope/screens/app/app_screen.dart';
 
 class RegisterScreen extends StatelessWidget {
   const RegisterScreen({super.key});
@@ -41,10 +40,15 @@ class RegisterScreen extends StatelessWidget {
         NSFillButton(
           text: "Daftar",
           onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const AppScreen()),
-            );
+            showDialog(
+                context: context,
+                builder: (context) {
+                  return const AlertDialog(
+                    title: Text(
+                      "Mohon maaf, fitur ini belum tersedia",
+                    ),
+                  );
+                });
           },
           backgroundColor: const Color.fromRGBO(255, 215, 0, 1),
           foregroundColor: Colors.white,

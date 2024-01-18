@@ -78,7 +78,17 @@ class LoginOfferScreen extends StatelessWidget {
                   // Skip
                   NSGhostButton(
                     text: "Lewati untuk sekarang",
-                    onPressed: () {},
+                    onPressed: () {
+                      showDialog(
+                          context: context,
+                          builder: (context) {
+                            return const AlertDialog(
+                              title: Text(
+                                "Mohon maaf, fitur ini belum tersedia",
+                              ),
+                            );
+                          });
+                    },
                     foregroundColor: Colors.grey,
                   ),
                 ],
